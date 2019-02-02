@@ -145,7 +145,7 @@ public class ContactRest {
 	public Response searchContact(@QueryParam("search") String data,@QueryParam("page") String page) throws Exception{
 		
 		
-		int pageSize = 5;
+		int pageSize = 10;
 		System.out.println(data+","+page);
 		
 		Connection connection = DBHelper.getInstance().getConnection();
