@@ -102,25 +102,30 @@ public class ContactRest {
 		
 		try {
 			JSONObject jsonObject = new JSONObject(data);
-			String email = jsonObject.getString("email");
-			if(emailExists(email)) {
+			String id = jsonObject.getString("id");
 				
-				Connection connection = DBHelper.getInstance().getConnection();
-				PreparedStatement preparedStatement = connection.prepareStatement("delete from contacts where email = ?");
-				preparedStatement.setString(1, email);
-				preparedStatement.execute();
-				
-				status = "success";
-				message = "Contact Deleted";
-				
-				
+			
+			
+			Connection connection = DBHelper.getInstance().getConnection();
+			
+			PreparedStatement preparedStatement = connection.prepareStatement("select id from contacts where id = ?");
+			preparedStatement.setString(1, id);
+			
+			if(preparedStatement.executeQuery()!=null) {
+				 	
+					preparedStatement = connection.prepareStatement("delete from contacts where id = ?");
+					preparedStatement.setString(1, id);
+					preparedStatement.execute();
+						
+					status = "success";
+					message = "Contact Deleted";
 			}else {
 				
-				status = "failed";
-				message = "No Such Contact";
-				
+					status = "failed";
+					message = "incorrect id";	
 			}
-			
+		   
+				
 			
 		}catch(Exception e) {
 			
@@ -145,7 +150,7 @@ public class ContactRest {
 	public Response searchContact(@QueryParam("search") String data,@QueryParam("page") String page) throws Exception{
 		
 		
-		int pageSize = 10;
+		int pageSize = 5;
 		System.out.println(data+","+page);
 		
 		Connection connection = DBHelper.getInstance().getConnection();
@@ -228,7 +233,7 @@ public class ContactRest {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	@Path("/editName")
+	@Path("/editContact")
 	public Response editContact(String data) throws Exception{
 		
 		String status = "";
@@ -248,9 +253,9 @@ public class ContactRest {
 			
 			if(preparedStatement.executeQuery()!=null) {
 				
-				insertContact(name, email);
+				updateContact(id,name, email);
 				status = "success";
-				message = "Contact Added";
+				message = "Contact Updated";
 				
 			}else {
 				
@@ -265,6 +270,7 @@ public class ContactRest {
 		
 		status = "failed";
 		message = "Exception Occured";
+		e.printStackTrace();
 		
 	}
 		
@@ -272,6 +278,19 @@ public class ContactRest {
 		return Response.ok(finalResponse).build();
 		
 	
+	}
+	
+	
+	public void updateContact(String id,String name,String email) throws Exception {
+		
+		Connection connection = DBHelper.getInstance().getConnection();
+		PreparedStatement preparedStatement = connection.prepareStatement("update contacts set name = ? , email = ? where id = ?");
+		preparedStatement.setString(1, name);
+		preparedStatement.setString(2, email);
+		preparedStatement.setString(3, id);
+		
+		preparedStatement.execute();
+		
 	}
 		
 }
