@@ -111,7 +111,7 @@ public class ContactRest {
 			PreparedStatement preparedStatement = connection.prepareStatement("select id from contacts where id = ?");
 			preparedStatement.setString(1, id);
 			
-			if(preparedStatement.executeQuery()!=null) {
+			if(preparedStatement.executeQuery().next()) {
 				 	
 					preparedStatement = connection.prepareStatement("delete from contacts where id = ?");
 					preparedStatement.setString(1, id);
@@ -122,7 +122,7 @@ public class ContactRest {
 			}else {
 				
 					status = "failed";
-					message = "incorrect id";	
+					message = "No Such Contact";	
 			}
 		   
 				
@@ -251,7 +251,7 @@ public class ContactRest {
 			PreparedStatement preparedStatement = connection.prepareStatement("select id from contacts where id = ?");
 			preparedStatement.setString(1, id);
 			
-			if(preparedStatement.executeQuery()!=null) {
+			if(preparedStatement.executeQuery().next()) {
 				
 				updateContact(id,name, email);
 				status = "success";
